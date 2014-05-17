@@ -7,7 +7,7 @@ public class ObjetoGrafico {
 	private int primitiva;
 	private BBox bbox;
 	private ObjetoGrafico[] filhos;
-	private Tranformacao transformacao;
+	private Transformacao transformacao;
 
 	public void adicionar() {}
 
