@@ -1,26 +1,59 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.media.opengl.GL;
+
 public class ObjetoGrafico {
 
-	private Ponto[] pontos;
+	private List<Ponto> pontos;
 	private Cor cor;
 	private int primitiva;
 	private BBox bbox;
-	private ObjetoGrafico[] filhos;
+	private List<ObjetoGrafico> filhos;
 	private Transformacao transformacao;
+	private boolean selecionado;
+	private ObjetoGrafico objetoPai;
+	
+	public ObjetoGrafico() {
+		pontos = new ArrayList<Ponto>();
+		cor = new Cor(0, 0, 0);
+		primitiva = GL.GL_LINE;
+		filhos = new ArrayList<ObjetoGrafico>();
+		selecionado = false;
+		objetoPai = null;
+	}
 
+	public ObjetoGrafico(ObjetoGrafico objetoPai) {
+		pontos = new ArrayList<Ponto>();
+		cor = new Cor(0, 0, 0);
+		primitiva = GL.GL_LINE;
+		filhos = new ArrayList<ObjetoGrafico>();
+		selecionado = false;
+		this.objetoPai = objetoPai;
+	}
+	
 	public void adicionar() {}
 
 	public void remover() {}
 	
 	public void desenhar() {}
 
-	public Ponto[] getPontos() {
+	public List<Ponto> getPontos() {
 		return pontos;
 	}
 
-	public void setPontos(Ponto[] pontos) {
+	public void setPontos(List<Ponto> pontos) {
 		this.pontos = pontos;
+	}
+
+	public List<ObjetoGrafico> getFilhos() {
+		return filhos;
+	}
+
+	public void setFilhos(List<ObjetoGrafico> filhos) {
+		this.filhos = filhos;
 	}
 
 	public Cor getCor() {
@@ -47,14 +80,6 @@ public class ObjetoGrafico {
 		this.bbox = bbox;
 	}
 
-	public ObjetoGrafico[] getFilhos() {
-		return filhos;
-	}
-
-	public void setFilhos(ObjetoGrafico[] filhos) {
-		this.filhos = filhos;
-	}
-
 	public Transformacao getTransformacao() {
 		return transformacao;
 	}
@@ -62,5 +87,20 @@ public class ObjetoGrafico {
 	public void setTransformacao(Transformacao transformacao) {
 		this.transformacao = transformacao;
 	}
-	
+
+	public boolean isSelecionado() {
+		return selecionado;
+	}
+
+	public void setSelecionado(boolean selecionado) {
+		this.selecionado = selecionado;
+	}
+
+	public ObjetoGrafico getObjetoPai() {
+		return objetoPai;
+	}
+
+	public void setObjetoPai(ObjetoGrafico objetoPai) {
+		this.objetoPai = objetoPai;
+	}
 }
