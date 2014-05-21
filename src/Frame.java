@@ -14,7 +14,8 @@ public class Frame extends JFrame{
 	public Frame() {		
 		// Cria o frame.
 		super("CG-N3");   
-		setBounds(50,100,500,500); 
+		//setBounds(50,100,500,500); 
+		setBounds(300,250,416,422+16);  // 400 + 22 da borda do título da janela + 16 para chegar nos 400 no Win7
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout());
 

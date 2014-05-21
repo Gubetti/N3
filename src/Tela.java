@@ -42,24 +42,27 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		 gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		 gl.glMatrixMode(GL.GL_MODELVIEW);
 		 gl.glLoadIdentity();
-		 //glu.gluOrtho2D( mundo.getCamera().getOrtho2d_minX(),  mundo.getCamera().getOrtho2d_maxX(),  mundo.getCamera().getOrtho2d_minY(),  mundo.getCamera().getOrtho2d_maxY());
-		 glu.gluOrtho2D(-30.0f, 30.0f, -30.0f, 30.0f);
+		 glu.gluOrtho2D( mundo.getCamera().getOrtho2d_minX(),  mundo.getCamera().getOrtho2d_maxX(),  mundo.getCamera().getOrtho2d_minY(),  mundo.getCamera().getOrtho2d_maxY());
+		// glu.gluOrtho2D(-30.0f, 30.0f, -30.0f, 30.0f);
 
 		 displaySRU();
-		 //desenharMundo
+		 System.out.println(mundo.toString());
+		 for(ObjetoGrafico objetoGrafico : mundo.getObjetos()) {
+			 objetoGrafico.desenhar(gl);
+		 }
 		 gl.glFlush();
 	}
 	
 	private void displaySRU() {
 		gl.glColor3f(1.0f, 0.0f, 0.0f);
 		gl.glBegin(GL.GL_LINES);
-			gl.glVertex2f(-20.0f, 0.0f);
-			gl.glVertex2f(20.0f, 0.0f);
+			gl.glVertex2f(-200.0f, 0.0f);
+			gl.glVertex2f(200.0f, 0.0f);
 		gl.glEnd();
 		gl.glColor3f(0.0f, 1.0f, 0.0f);
 		gl.glBegin(GL.GL_LINES);
-			gl.glVertex2f(0.0f, -20.0f);
-			gl.glVertex2f(0.0f, 20.0f);
+			gl.glVertex2f(0.0f, -200.0f);
+			gl.glVertex2f(0.0f, 200.0f);
 		gl.glEnd();
 	}
 	
@@ -70,6 +73,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		// Termina de criar um polígono
 		case KeyEvent.VK_ENTER:
 			if(estadoAtual == Estado.ADICAO && objetoGraficoInserir != null) {
+				objetoGraficoInserir.getPontos().remove(objetoGraficoInserir.getPontos().size() - 1);
 				ObjetoGrafico objetoGrafico = new ObjetoGrafico();
 				objetoGrafico.setBbox(objetoGraficoInserir.getBbox());
 				objetoGrafico.setCor(objetoGraficoInserir.getCor());
@@ -129,7 +133,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 				objetoGraficoEditar.setSelecionado(true);
 			}
 			break;
-		case KeyEvent.VK_4:
+		case KeyEvent.VK_ESCAPE:
 			// Aqui "deselecionaremos" um objeto se estiver selecionado
 			if(objetoGraficoEditar != null) {
 				objetoGraficoEditar.setSelecionado(false);
@@ -165,8 +169,9 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		int dif = glDrawable.getWidth() / 2;
 		if(estadoAtual == Estado.ADICAO && objetoGraficoInserir != null) {
-			objetoGraficoInserir.getPontos().set(objetoGraficoInserir.getPontos().size() - 1, new Ponto(e.getX(), e.getY(), 0, 1));
+			objetoGraficoInserir.getPontos().set(objetoGraficoInserir.getPontos().size() - 1, new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
 			glDrawable.display();
 		}
 		if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
@@ -191,11 +196,12 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		System.out.println(e.getX() + "  " + e.getY());
+		System.out.println((e.getX() - glDrawable.getWidth() / 2)+ "  " + (e.getY() - glDrawable.getWidth() / 2));
+		int dif = glDrawable.getWidth() / 2;
 		if(estadoAtual == Estado.ADICAO) {
 			if(objetoGraficoInserir == null) {
 				objetoGraficoInserir = new ObjetoGrafico();
-				objetoGraficoInserir.getPontos().add(new Ponto(e.getX(), e.getY(), 0, 1));
+				objetoGraficoInserir.getPontos().add(new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
 				if(objetoGraficoEditar == null) { // Adicona no mundo
 					mundo.getObjetos().add(objetoGraficoInserir);
 				} else {// Adiciona como filho do objeto selecionado
@@ -203,7 +209,8 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 					objetoGraficoInserir.setObjetoPai(objetoGraficoEditar);
 				}
 			}
-			objetoGraficoInserir.getPontos().add(new Ponto(e.getX(), e.getY(), 0, 1));
+			objetoGraficoInserir.getPontos().set(objetoGraficoInserir.getPontos().size() - 1, new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
+			objetoGraficoInserir.getPontos().add(new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
 		} else { //Edicao
 			if(objetoGraficoEditar == null) {
 				// Verificar se foi selecionado um vértice do objeto. Se sim mover!

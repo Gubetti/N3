@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Mundo {
@@ -9,8 +10,9 @@ public class Mundo {
 	private Cor corDeFundo;
 	
 	public Mundo() {
-		camera = new Camera(0.0f, 500.0f, 500.0f, 0.0f);
+		camera = new Camera(-200.0f, 200.0f, -200.0f, 200.0f);
 		corDeFundo = new Cor(1f, 1f, 1f);
+		objetos = new ArrayList<ObjetoGrafico>();
 	}
 
 	public void adicionarObjetoGrafico() {
@@ -40,4 +42,15 @@ public class Mundo {
 	public void setCorDeFundo(Cor corDeFundo) {
 		this.corDeFundo = corDeFundo;
 	}
+
+	@Override
+	public String toString() {
+		String s = "";
+		for(ObjetoGrafico objetoGrafico: objetos) {
+			s += objetoGrafico.toString() + "\n";
+		}
+		return s;
+	}
+	
+	
 }

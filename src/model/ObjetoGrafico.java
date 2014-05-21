@@ -17,28 +17,44 @@ public class ObjetoGrafico {
 	private ObjetoGrafico objetoPai;
 	
 	public ObjetoGrafico() {
-		pontos = new ArrayList<Ponto>();
-		cor = new Cor(0, 0, 0);
-		primitiva = GL.GL_LINE;
-		filhos = new ArrayList<ObjetoGrafico>();
-		selecionado = false;
+		init();
 		objetoPai = null;
 	}
 
 	public ObjetoGrafico(ObjetoGrafico objetoPai) {
-		pontos = new ArrayList<Ponto>();
-		cor = new Cor(0, 0, 0);
-		primitiva = GL.GL_LINE;
-		filhos = new ArrayList<ObjetoGrafico>();
-		selecionado = false;
+		init();
 		this.objetoPai = objetoPai;
+	}
+	
+	private void init() {
+		pontos = new ArrayList<Ponto>();
+		cor = new Cor(1, 0, 0);
+		primitiva = GL.GL_LINE_STRIP;
+		filhos = new ArrayList<ObjetoGrafico>();
+		transformacao = new Transformacao();
+		selecionado = false;
 	}
 	
 	public void adicionar() {}
 
 	public void remover() {}
 	
-	public void desenhar() {}
+	public void desenhar(GL gl) {
+		gl.glColor3f(cor.getR(), cor.getG(), cor.getB());
+
+		gl.glPushMatrix();
+			gl.glMultMatrixd(transformacao.getMatriz(), 0);
+				gl.glBegin(primitiva);
+				for (Ponto ponto : pontos) {
+					gl.glVertex2d(ponto.GetX(), ponto.GetY() * -1);
+				}
+				gl.glEnd();
+				for(ObjetoGrafico filho : filhos) {
+					filho.desenhar(gl);
+				}
+		gl.glPopMatrix();
+		
+	}
 
 	public List<Ponto> getPontos() {
 		return pontos;
@@ -103,4 +119,15 @@ public class ObjetoGrafico {
 	public void setObjetoPai(ObjetoGrafico objetoPai) {
 		this.objetoPai = objetoPai;
 	}
+
+	@Override
+	public String toString() {
+		String s = "";
+		for(Ponto ponto : pontos) {
+			s += ponto.toString() + ", ";
+		}
+		return s;
+	}
+	
+	
 }
