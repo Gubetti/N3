@@ -16,19 +16,14 @@ public class ObjetoGrafico {
 	private boolean selecionado;
 	private ObjetoGrafico objetoPai;
 	
-	public ObjetoGrafico() {
+	public ObjetoGrafico(Cor cor) {
 		init();
+		this.cor = cor;
 		objetoPai = null;
-	}
-
-	public ObjetoGrafico(ObjetoGrafico objetoPai) {
-		init();
-		this.objetoPai = objetoPai;
 	}
 	
 	private void init() {
 		pontos = new ArrayList<Ponto>();
-		cor = new Cor(0, 0, 0);
 		primitiva = GL.GL_LINE_STRIP;
 		bbox = new BBox();
 		filhos = new ArrayList<ObjetoGrafico>();
@@ -60,14 +55,20 @@ public class ObjetoGrafico {
 		int intersecoes = 0;
 		for(int i = 0; i < pontos.size(); i ++) {
 			double xInterseccao = -1000;
-			if(i + 1 == pontos.size()) {
-				//último com first
-				 xInterseccao =  xInterseccao(pontos.get(i), pontos.get(0), ponto);
+			Ponto p1 = pontos.get(i);
+			Ponto p2;
+			if (i + 1 == pontos.size()) {
+				// último com first
+				p2 = pontos.get(0);
 			} else {
-				 xInterseccao =  xInterseccao(pontos.get(i), pontos.get(i + 1), ponto);
+				p2 = pontos.get(i + 1);
 			}
-			if(xInterseccao >= 0 && xInterseccao <= 1) {
-				intersecoes++;
+			xInterseccao = xInterseccao(p1, p2, ponto);
+			if (xInterseccao >= 0 && xInterseccao <= 1) {
+				double xint = p1.GetX() + (p2.GetX() - p1.GetX()) * xInterseccao;
+				if(xint > ponto.GetX()) {
+					intersecoes++;
+				}
 			}
 		}
 		
@@ -78,7 +79,8 @@ public class ObjetoGrafico {
 	}
 	
 	private double xInterseccao(Ponto p1, Ponto p2, Ponto ponto) {
-		return (p1.GetX() + (p2.GetX() - p1.GetX())) * ((ponto.GetY() - p1.GetY())/(p2.GetY() - p1.GetY()));
+		return (ponto.GetY() - p1.GetY()) / (p2.GetY() - p1.GetY());
+		//return (p1.GetX() + (p2.GetX() - p1.GetX())) * ((ponto.GetY() - p1.GetY())/(p2.GetY() - p1.GetY()));
 	}
 	
 	public void atualizarBBox() {

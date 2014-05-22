@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.media.opengl.GL;
+
 public class Mundo {
 	
 	private List<ObjetoGrafico> objetos;
@@ -15,6 +17,12 @@ public class Mundo {
 		objetos = new ArrayList<ObjetoGrafico>();
 	}
 
+	public void desenhar(GL gl) {
+		 for(ObjetoGrafico objetoGrafico : objetos) {
+			 objetoGrafico.desenhar(gl);
+		 }
+	}
+	
 	public void adicionarObjetoGrafico() {
 		
 	}

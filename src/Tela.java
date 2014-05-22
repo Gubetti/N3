@@ -3,6 +3,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.media.opengl.DebugGL;
 import javax.media.opengl.GL;
@@ -10,6 +12,7 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
+import model.Cor;
 import model.Estado;
 import model.Mundo;
 import model.ObjetoGrafico;
@@ -25,6 +28,8 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 	private ObjetoGrafico objetoGraficoInserir;
 	private ObjetoGrafico objetoGraficoEditar;
 	private int dif;
+	private boolean achouPonto;
+	private List<Cor> cores;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -37,6 +42,12 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		System.out.println("Espaço de desenho com tamanho: " + drawable.getWidth() + " x " + drawable.getHeight());
 		gl.glClearColor(mundo.getCorDeFundo().getR(), mundo.getCorDeFundo().getG(), mundo.getCorDeFundo().getB(), mundo.getCorDeFundo().getA());
 		dif = drawable.getWidth() / 2;
+		achouPonto = false;
+		cores = new ArrayList<Cor>();
+		cores.add(new Cor(0, 0, 0));
+		cores.add(new Cor(1, 0, 0));
+		cores.add(new Cor(0, 1, 0));
+		cores.add(new Cor(0, 0, 1));
 	}
 	
 	@Override
@@ -45,13 +56,10 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		 gl.glMatrixMode(GL.GL_MODELVIEW);
 		 gl.glLoadIdentity();
 		 glu.gluOrtho2D( mundo.getCamera().getOrtho2d_minX(),  mundo.getCamera().getOrtho2d_maxX(),  mundo.getCamera().getOrtho2d_minY(),  mundo.getCamera().getOrtho2d_maxY());
-		// glu.gluOrtho2D(-30.0f, 30.0f, -30.0f, 30.0f);
 
 		 displaySRU();
-		 System.out.println(mundo.toString());
-		 for(ObjetoGrafico objetoGrafico : mundo.getObjetos()) {
-			 objetoGrafico.desenhar(gl);
-		 }
+		 //System.out.println(mundo.toString());
+		 mundo.desenhar(gl);
 		 gl.glFlush();
 	}
 	
@@ -76,14 +84,19 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		case KeyEvent.VK_ENTER:
 			if(estadoAtual == Estado.ADICAO && objetoGraficoInserir != null) {
 				objetoGraficoInserir.getPontos().remove(objetoGraficoInserir.getPontos().size() - 1);
-				ObjetoGrafico objetoGrafico = new ObjetoGrafico();
+				ObjetoGrafico objetoGrafico = new ObjetoGrafico(objetoGraficoInserir.getCor());
 				objetoGrafico.setBbox(objetoGraficoInserir.getBbox());
-				objetoGrafico.setCor(objetoGraficoInserir.getCor());
 				objetoGrafico.setFilhos(objetoGraficoInserir.getFilhos());
 				objetoGrafico.setPontos(objetoGraficoInserir.getPontos());
 				objetoGrafico.setPrimitiva(objetoGraficoInserir.getPrimitiva());
 				objetoGrafico.setTransformacao(objetoGraficoInserir.getTransformacao());
-				mundo.getObjetos().set(mundo.getObjetos().indexOf(objetoGraficoInserir), objetoGrafico);
+				if(objetoGraficoEditar == null) {
+					mundo.getObjetos().set(mundo.getObjetos().indexOf(objetoGraficoInserir), objetoGrafico);
+				} else {
+					objetoGraficoEditar.getFilhos().set(objetoGraficoEditar.getFilhos().indexOf(objetoGraficoInserir), objetoGrafico);
+					objetoGrafico.setObjetoPai(objetoGraficoEditar);
+				}
+				
 				objetoGrafico.atualizarBBox();
 				objetoGraficoInserir = null;				
 			}
@@ -98,13 +111,41 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 				estadoAtual = Estado.ADICAO;
 			}
 			break;
+		case KeyEvent.VK_C:
+			// Muda a cor
+			if(estadoAtual == Estado.ADICAO && objetoGraficoInserir != null) {
+				if(objetoGraficoInserir.getCor().equals(cores.get(cores.size() - 1))) {
+					objetoGraficoInserir.setCor(cores.get(0));
+				} else {
+					objetoGraficoInserir.setCor(cores.get(cores.indexOf(objetoGraficoInserir.getCor()) + 1));
+				}
+			} else if (estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				if(objetoGraficoEditar.getCor().equals(cores.get(cores.size() - 1))) {
+					objetoGraficoEditar.setCor(cores.get(0));
+				} else {
+					objetoGraficoEditar.setCor(cores.get(cores.indexOf(objetoGraficoEditar.getCor()) + 1));
+				}
+			}
+			break;
+		case KeyEvent.VK_D:
+			// Exclui objeto selecionado
+			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				if(objetoGraficoEditar.getObjetoPai() == null) {
+					mundo.getObjetos().remove(objetoGraficoEditar);
+				} else {
+					objetoGraficoEditar.getObjetoPai().getFilhos().remove(objetoGraficoEditar);
+				}
+				objetoGraficoEditar = null;
+				achouPonto = false;
+			}
+			break;
 		case KeyEvent.VK_P:
 			// Troca a primitiva de um objeto gráfico
 			if(estadoAtual == Estado.ADICAO && objetoGraficoInserir != null) {
-				if(objetoGraficoInserir.getPrimitiva() == GL.GL_LINE) {
-					objetoGraficoInserir.setPrimitiva(GL.GL_LINE_LOOP);
+				if(objetoGraficoInserir.getPrimitiva() == GL.GL_LINE_STRIP) {
+					objetoGraficoInserir.setPrimitiva(GL.GL_LINE_STRIP_ADJACENCY_EXT);
 				} else {
-					objetoGraficoInserir.setPrimitiva(GL.GL_LINE);
+					objetoGraficoInserir.setPrimitiva(GL.GL_LINE_STRIP);
 				}
 			}
 			break;
@@ -139,6 +180,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			if(objetoGraficoEditar != null) {
 				objetoGraficoEditar.setSelecionado(false);
 				objetoGraficoEditar = null;
+				achouPonto = false;
 			}
 			break;
 		}
@@ -199,7 +241,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		//System.out.println((e.getX() - glDrawable.getWidth() / 2)+ "  " + (e.getY() - glDrawable.getWidth() / 2));
 		if(estadoAtual == Estado.ADICAO) {
 			if(objetoGraficoInserir == null) {
-				objetoGraficoInserir = new ObjetoGrafico();
+				objetoGraficoInserir = new ObjetoGrafico(cores.get(0));
 				objetoGraficoInserir.getPontos().add(new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
 				if(objetoGraficoEditar == null) { // Adicona no mundo
 					mundo.getObjetos().add(objetoGraficoInserir);
@@ -213,14 +255,10 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			objetoGraficoInserir.atualizarBBox();
 		} else { //Edicao
 			if(objetoGraficoEditar == null) {
-				Ponto ponto = new Ponto(e.getX() - dif, e.getY() - dif * -1, 0, 1);
-				for(ObjetoGrafico objetoGrafico : mundo.getObjetos()) {
-					//Verifica se o ponto está dentro da BBox e se pertence ao objeto com scanLine
-					if(objetoGrafico.getBbox().ptoDentroBBox(ponto)) {
-						if(objetoGrafico.scanLine(ponto)) {
-							objetoGraficoEditar = objetoGrafico;
-							objetoGraficoEditar.setSelecionado(true);
-						}
+				Ponto ponto = new Ponto(e.getX() - dif, e.getY() - dif, 0, 1);
+				for (ObjetoGrafico objetoGrafico : mundo.getObjetos()) {
+					if (!achouPonto) {
+						verificarPonto(objetoGrafico, ponto);
 					}
 				}
 			} else { //Procura ponto do objeto
@@ -235,4 +273,21 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 	public void mouseReleased(MouseEvent e) {
 		
 	}
+	
+	private void verificarPonto(ObjetoGrafico objetoGrafico, Ponto ponto) {
+		//Verifica se o ponto está dentro da BBox e se pertence ao objeto com scanLine
+		if(objetoGrafico.getBbox().ptoDentroBBox(ponto)) {
+			if(objetoGrafico.scanLine(ponto)) {
+				objetoGraficoEditar = objetoGrafico;
+				objetoGraficoEditar.setSelecionado(true);
+				achouPonto = true;
+			}
+		}
+		if (!achouPonto) {
+			for (ObjetoGrafico filho : objetoGrafico.getFilhos()) {
+				verificarPonto(filho, ponto);
+			}
+		}
+	}
+	
 }
