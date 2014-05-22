@@ -24,6 +24,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 	private Estado estadoAtual;
 	private ObjetoGrafico objetoGraficoInserir;
 	private ObjetoGrafico objetoGraficoEditar;
+	private int dif;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -35,6 +36,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		glDrawable.setGL(new DebugGL(gl));
 		System.out.println("Espaço de desenho com tamanho: " + drawable.getWidth() + " x " + drawable.getHeight());
 		gl.glClearColor(mundo.getCorDeFundo().getR(), mundo.getCorDeFundo().getG(), mundo.getCorDeFundo().getB(), mundo.getCorDeFundo().getA());
+		dif = drawable.getWidth() / 2;
 	}
 	
 	@Override
@@ -82,6 +84,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 				objetoGrafico.setPrimitiva(objetoGraficoInserir.getPrimitiva());
 				objetoGrafico.setTransformacao(objetoGraficoInserir.getTransformacao());
 				mundo.getObjetos().set(mundo.getObjetos().indexOf(objetoGraficoInserir), objetoGrafico);
+				objetoGrafico.atualizarBBox();
 				objetoGraficoInserir = null;				
 			}
 			break;
@@ -89,6 +92,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			// Muda o estado do programa
 			if(estadoAtual == Estado.ADICAO) {
 				estadoAtual = Estado.EDICAO_EXCLUSAO;
+				mundo.getObjetos().remove(objetoGraficoInserir);
 				objetoGraficoInserir = null;
 			} else {
 				estadoAtual = Estado.ADICAO;
@@ -121,9 +125,6 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 				}
 				objetoGraficoEditar.setSelecionado(true);
 			}
-			break;
-		case KeyEvent.VK_2:
-			//Se um objeto gráfico estiver selecionado, após esta ação deve ser selecionado um filho do objeto, se existir. Pressione novamente para ir para o filho do filho, se tiver
 			break;
 		case KeyEvent.VK_3:
 			//E aqui o objeto gráfico que estiver selecionado vai para o pai, se existir
@@ -169,7 +170,6 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		int dif = glDrawable.getWidth() / 2;
 		if(estadoAtual == Estado.ADICAO && objetoGraficoInserir != null) {
 			objetoGraficoInserir.getPontos().set(objetoGraficoInserir.getPontos().size() - 1, new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
 			glDrawable.display();
@@ -196,8 +196,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		System.out.println((e.getX() - glDrawable.getWidth() / 2)+ "  " + (e.getY() - glDrawable.getWidth() / 2));
-		int dif = glDrawable.getWidth() / 2;
+		//System.out.println((e.getX() - glDrawable.getWidth() / 2)+ "  " + (e.getY() - glDrawable.getWidth() / 2));
 		if(estadoAtual == Estado.ADICAO) {
 			if(objetoGraficoInserir == null) {
 				objetoGraficoInserir = new ObjetoGrafico();
@@ -211,11 +210,24 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			}
 			objetoGraficoInserir.getPontos().set(objetoGraficoInserir.getPontos().size() - 1, new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
 			objetoGraficoInserir.getPontos().add(new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
+			objetoGraficoInserir.atualizarBBox();
 		} else { //Edicao
 			if(objetoGraficoEditar == null) {
-				// Verificar se foi selecionado um vértice do objeto. Se sim mover!
+				Ponto ponto = new Ponto(e.getX() - dif, e.getY() - dif * -1, 0, 1);
+				for(ObjetoGrafico objetoGrafico : mundo.getObjetos()) {
+					//Verifica se o ponto está dentro da BBox e se pertence ao objeto com scanLine
+					if(objetoGrafico.getBbox().ptoDentroBBox(ponto)) {
+						if(objetoGrafico.scanLine(ponto)) {
+							objetoGraficoEditar = objetoGrafico;
+							objetoGraficoEditar.setSelecionado(true);
+						}
+					}
+				}
+			} else { //Procura ponto do objeto
+				
 			}
 		}
+		
 		glDrawable.display();
 	}
 
