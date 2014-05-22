@@ -12,12 +12,14 @@ public class BBox {
 	private double Ymax;
 	private double Zmin;
 	private double Zmax;
+	private Transformacao transformacao;
 	
 	public BBox() {
 		Xmin = 1000;
 		Xmax = -1000;
 		Ymin = 1000;
 		Ymax = -1000;
+		transformacao = new Transformacao();
 	}
 
 	public void atualiza(List<Ponto> pontos) {
@@ -46,14 +48,17 @@ public class BBox {
 
 	public void desenhar(GL gl) {
 		 gl.glColor3f(0, 0, 1);
-		 gl.glBegin(GL.GL_LINE_LOOP);
-		 	gl.glVertex2d(Xmax, Ymax * -1);
-		 	gl.glVertex2d(Xmin, Ymax * -1);
-		 	gl.glVertex2d(Xmin, Ymin * -1);
-		 	gl.glVertex2d(Xmax, Ymin * -1);
-		 gl.glEnd();
+		 gl.glPushMatrix();
+		 	gl.glMultMatrixd(transformacao.getMatriz(), 0);
+			gl.glBegin(GL.GL_LINE_LOOP);
+				gl.glVertex2d(Xmax, Ymax * -1);
+				gl.glVertex2d(Xmin, Ymax * -1);
+				gl.glVertex2d(Xmin, Ymin * -1);
+				gl.glVertex2d(Xmax, Ymin * -1);
+			gl.glEnd();
+		 gl.glPopMatrix();
 	}
-
+	
 	public double getXmin() {
 		return Xmin;
 	}
@@ -100,6 +105,14 @@ public class BBox {
 
 	public void setZmax(double zmax) {
 		Zmax = zmax;
+	}
+
+	public Transformacao getTransformacao() {
+		return transformacao;
+	}
+
+	public void setTransformacao(Transformacao transformacao) {
+		this.transformacao = transformacao;
 	}
 
 	@Override

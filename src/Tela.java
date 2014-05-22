@@ -17,6 +17,7 @@ import model.Estado;
 import model.Mundo;
 import model.ObjetoGrafico;
 import model.Ponto;
+import model.Transformacao;
 
 
 public class Tela implements GLEventListener, KeyListener, MouseListener, MouseMotionListener{
@@ -168,8 +169,16 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 				achouPonto = false;
 			}
 			break;
+		case KeyEvent.VK_RIGHT:
+			double x = 2;
+			Ponto point = new Ponto();
+			Transformacao matrixTranslate = new Transformacao();
+			point.SetX(x);
+			matrixTranslate.FazerTranslacao(point);
+			objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrixTranslate));
+			objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrixTranslate));
+			break;
 		}
-
 		glDrawable.display();
 	}
 
@@ -261,8 +270,12 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 	
 	private void verificarPonto(ObjetoGrafico objetoGrafico, Ponto ponto) {
 		//Verifica se o ponto está dentro da BBox e se pertence ao objeto com scanLine
-		if(objetoGrafico.getBbox().ptoDentroBBox(ponto)) {
-			if(objetoGrafico.scanLine(ponto)) {
+		Transformacao transformacao = new Transformacao();
+		transformacao.setMatriz(objetoGrafico.getTransformacao().getMatriz());
+		Ponto pontoTransformado = transformacao.transformarPonto(ponto);
+		if(objetoGrafico.getBbox().ptoDentroBBox(pontoTransformado)) {
+			System.out.println("DENTRO");
+			if(objetoGrafico.scanLine(pontoTransformado)) {
 				objetoGraficoEditar = objetoGrafico;
 				objetoGraficoEditar.setSelecionado(true);
 				achouPonto = true;
