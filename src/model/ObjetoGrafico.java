@@ -14,6 +14,7 @@ public class ObjetoGrafico {
 	private List<ObjetoGrafico> filhos;
 	private Transformacao transformacao;
 	private boolean selecionado;
+	private boolean fechado;
 	private ObjetoGrafico objetoPai;
 	
 	public ObjetoGrafico(Cor cor) {
@@ -29,6 +30,7 @@ public class ObjetoGrafico {
 		filhos = new ArrayList<ObjetoGrafico>();
 		transformacao = new Transformacao();
 		selecionado = false;
+		fechado = false;
 	}
 	
 	public void desenhar(GL gl) {
@@ -141,6 +143,14 @@ public class ObjetoGrafico {
 
 	public void setSelecionado(boolean selecionado) {
 		this.selecionado = selecionado;
+	}
+
+	public boolean isFechado() {
+		return fechado;
+	}
+
+	public void setFechado(boolean fechado) {
+		this.fechado = fechado;
 	}
 
 	public ObjetoGrafico getObjetoPai() {

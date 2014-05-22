@@ -140,31 +140,16 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			}
 			break;
 		case KeyEvent.VK_P:
-			// Troca a primitiva de um objeto gráfico
-			if(estadoAtual == Estado.ADICAO && objetoGraficoInserir != null) {
-				if(objetoGraficoInserir.getPrimitiva() == GL.GL_LINE_STRIP) {
-					objetoGraficoInserir.setPrimitiva(GL.GL_LINE_STRIP_ADJACENCY_EXT);
+			// Deixa aberto ou fechado um objeto gráfico
+			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				if(objetoGraficoEditar.isFechado()) {
+					objetoGraficoEditar.getPontos().remove(objetoGraficoEditar.getPontos().size() - 1);
+					objetoGraficoEditar.setFechado(false);
 				} else {
-					objetoGraficoInserir.setPrimitiva(GL.GL_LINE_STRIP);
+					Ponto ponto = objetoGraficoEditar.getPontos().get(0);
+					objetoGraficoEditar.getPontos().add(new Ponto(ponto.GetX(), ponto.GetY(), ponto.GetZ(), ponto.GetW()));
+					objetoGraficoEditar.setFechado(true);
 				}
-			}
-			break;
-		case KeyEvent.VK_1:
-			//Assim que pressionado, seleciona um objeto gráfico. Pressione novamente para ir para outro objeto gráfico
-			if(objetoGraficoEditar == null) {
-				if(mundo.getObjetos().get(0) != null) {
-					objetoGraficoEditar = mundo.getObjetos().get(0);
-					objetoGraficoEditar.setSelecionado(true);
-				}
-			} else {
-				objetoGraficoEditar.setSelecionado(false);
-				int novoIndex = mundo.getObjetos().indexOf(objetoGraficoEditar) + 1;
-				if (novoIndex < mundo.getObjetos().size()) {
-					objetoGraficoEditar = mundo.getObjetos().get(novoIndex);
-				} else {
-					objetoGraficoEditar = mundo.getObjetos().get(0);
-				}
-				objetoGraficoEditar.setSelecionado(true);
 			}
 			break;
 		case KeyEvent.VK_3:
