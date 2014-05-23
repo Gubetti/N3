@@ -138,15 +138,22 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			}
 			break;
 		case KeyEvent.VK_D:
-			// Exclui objeto selecionado
+			// Exclui objeto ou ponto selecionado
 			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
-				if(objetoGraficoEditar.getObjetoPai() == null) {
-					mundo.getObjetos().remove(objetoGraficoEditar);
-				} else {
-					objetoGraficoEditar.getObjetoPai().getFilhos().remove(objetoGraficoEditar);
+				if(objetoGraficoEditar.getPontoSelecionado() == null) { // Então exclui objeto gráfico
+					if (objetoGraficoEditar.getObjetoPai() == null) {
+						mundo.getObjetos().remove(objetoGraficoEditar);
+					} else {
+						objetoGraficoEditar.getObjetoPai().getFilhos().remove(objetoGraficoEditar);
+					}
+					objetoGraficoEditar = null;
+					achouPonto = false;
+				} else { // Exclui ponto
+					objetoGraficoEditar.getPontos().remove(objetoGraficoEditar.getPontoSelecionado());
+					objetoGraficoEditar.setPontoSelecionado(null);
+					objetoGraficoEditar.atualizarBBox();
 				}
-				objetoGraficoEditar = null;
-				achouPonto = false;
+
 			}
 			break;
 		case KeyEvent.VK_P:
@@ -245,12 +252,21 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		Ponto pontoClique = new Ponto(e.getX() - dif, e.getY() - dif, 0, 1);
 		if(estadoAtual == Estado.ADICAO && objetoGraficoInserir != null) {
-			objetoGraficoInserir.getPontos().set(objetoGraficoInserir.getPontos().size() - 1, new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
+			objetoGraficoInserir.getPontos().set(objetoGraficoInserir.getPontos().size() - 1, pontoClique);
 			glDrawable.display();
 		}
-		if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
-			// Fazer o rastro
+		if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null && objetoGraficoEditar.getPontoSelecionado() != null) {
+			for(int i = 0; i < objetoGraficoEditar.getPontos().size(); i++) {
+				if(objetoGraficoEditar.getPontos().get(i).equals(objetoGraficoEditar.getPontoSelecionado())) {
+					pontoClique.setCor(new Cor(1, 0, 0));
+					objetoGraficoEditar.getPontos().set(i, pontoClique);
+					objetoGraficoEditar.setPontoSelecionado(pontoClique);
+					objetoGraficoEditar.atualizarBBox();
+					glDrawable.display();
+				}
+			}
 		}
 	}
 
@@ -295,7 +311,13 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 					}
 				}
 			} else { //Procura ponto do objeto
-				
+				if(!objetoGraficoEditar.isTransformado()) { // Só procura em objetos não transformados
+					if(objetoGraficoEditar.getPontoSelecionado() == null) {
+						objetoGraficoEditar.verificarPontoEditar(new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
+					} else {
+						objetoGraficoEditar.mudarPontoSelecionado(new Ponto(e.getX() - dif, e.getY() - dif, 0, 1));
+					}
+				}
 			}
 		}
 		

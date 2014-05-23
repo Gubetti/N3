@@ -16,11 +16,11 @@ public class ObjetoGrafico {
 	private boolean selecionado;
 	private boolean transformado;
 	private ObjetoGrafico objetoPai;
+	private Ponto pontoSelecionado;
 	
 	public ObjetoGrafico(Cor cor) {
 		init();
 		this.cor = cor;
-		objetoPai = null;
 	}
 	
 	private void init() {
@@ -31,6 +31,8 @@ public class ObjetoGrafico {
 		transformacao = new Transformacao();
 		selecionado = false;
 		transformado = false;
+		objetoPai = null;
+		pontoSelecionado = null;
 	}
 	
 	public void desenhar(GL gl) {
@@ -58,6 +60,7 @@ public class ObjetoGrafico {
 				gl.glPointSize(6.0f);
 				gl.glBegin(GL.GL_POINTS);
 				for (Ponto ponto : pontos) {
+					gl.glColor3f(ponto.getCor().getR(), ponto.getCor().getG(), ponto.getCor().getB());
 					gl.glVertex2d(ponto.GetX(), ponto.GetY() * -1);
 				}
 				gl.glEnd();
@@ -100,6 +103,72 @@ public class ObjetoGrafico {
 	
 	public void atualizarBBox() {
 		bbox.atualiza(pontos);
+	}
+	
+
+	public void verificarPontoEditar(Ponto pontoClique) {
+		for(Ponto ponto : pontos) {
+			boolean achou = false;
+			//System.out.println("Ponto atual: " + ponto.GetX()  + " | " + ponto.GetY());
+			if(achou) {
+				break;
+			}
+			for(double x = ponto.GetX(); x > ponto.GetX() - 6; x--) {
+				for(double y = ponto.GetY(); y > ponto.GetY() - 6; y--) {
+					//System.out.println("X e Y: " + x + " | " + y);
+					if(pontoClique.GetX() == x && pontoClique.GetY() == y) {
+						pontoSelecionado = ponto;
+						pontoSelecionado.setCor(new Cor(1, 0, 0));
+						achou = true;
+						break;
+					}					
+				}
+				if(!achou) {
+					for(double y = ponto.GetY(); y < ponto.GetY() + 6; y++) {
+						//System.out.println("X e Y: " + x + " | " + y);
+						if(pontoClique.GetX() == x && pontoClique.GetY() == y) {
+							pontoSelecionado = ponto;
+							pontoSelecionado.setCor(new Cor(1, 0, 0));
+							achou = true;
+							break;
+						}					
+					}
+				}
+			}
+			
+			for(double x = ponto.GetX(); x < ponto.GetX() + 6; x++) {
+				for(double y = ponto.GetY(); y > ponto.GetY() - 6; y--) {
+					//System.out.println("X e Y: " + x + " | " + y);
+					if(pontoClique.GetX() == x && pontoClique.GetY() == y) {
+						pontoSelecionado = ponto;
+						pontoSelecionado.setCor(new Cor(1, 0, 0));
+						achou = true;
+						break;
+					}					
+				}
+				if(!achou) {
+					for(double y = ponto.GetY(); y < ponto.GetY() + 6; y++) {
+						//System.out.println("X e Y: " + x + " | " + y);
+						if(pontoClique.GetX() == x && pontoClique.GetY() == y) {
+							pontoSelecionado = ponto;
+							pontoSelecionado.setCor(new Cor(1, 0, 0));
+							achou = true;
+							break;
+						}					
+					}
+				}
+			}
+		}
+		//System.out.println(pontoClique.GetX() + " | " + pontoClique.GetY());
+	}
+	
+	public void mudarPontoSelecionado(Ponto pontoClique) {
+		pontoSelecionado.SetX(pontoClique.GetX());
+		pontoSelecionado.SetY(pontoClique.GetY());
+		pontoSelecionado.SetZ(pontoClique.GetZ());
+		pontoSelecionado.setCor(new Cor(0, 0, 1));
+		pontoSelecionado = null;
+		atualizarBBox();
 	}
 	
 	public List<Ponto> getPontos() {
@@ -175,6 +244,14 @@ public class ObjetoGrafico {
 		this.objetoPai = objetoPai;
 	}
 
+	public Ponto getPontoSelecionado() {
+		return pontoSelecionado;
+	}
+
+	public void setPontoSelecionado(Ponto pontoSelecionado) {
+		this.pontoSelecionado = pontoSelecionado;
+	}
+
 	@Override
 	public String toString() {
 		String s = "";
@@ -183,6 +260,4 @@ public class ObjetoGrafico {
 		}
 		return s;
 	}
-	
-	
 }

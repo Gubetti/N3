@@ -15,14 +15,15 @@ public class BBox {
 	private Transformacao transformacao;
 	
 	public BBox() {
-		Xmin = 1000;
-		Xmax = -1000;
-		Ymin = 1000;
-		Ymax = -1000;
 		transformacao = new Transformacao();
 	}
 
 	public void atualiza(List<Ponto> pontos) {
+		Xmin = 1000;
+		Xmax = -1000;
+		Ymin = 1000;
+		Ymax = -1000;
+		
 		for(Ponto ponto : pontos) {
 			if(ponto.GetX() > Xmax) {
 				Xmax = ponto.GetX();

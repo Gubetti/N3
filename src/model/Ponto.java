@@ -6,6 +6,7 @@ public class Ponto {
 	private double y;
 	private double z;
 	private double w;
+	private Cor cor;
 
 	public Ponto() {
 		this(0, 0, 0, 1);
@@ -16,6 +17,7 @@ public class Ponto {
 		this.y = y;
 		this.z = z;
 		this.w = w;
+		this.cor = new Cor(0, 0, 1);
 	}
 	
 	public double GetX() {
@@ -48,6 +50,14 @@ public class Ponto {
 
 	public void SetW(double w) {
 		this.w = w;
+	}
+	
+	public Cor getCor() {
+		return cor;
+	}
+
+	public void setCor(Cor cor) {
+		this.cor = cor;
 	}
 
 	@Override
