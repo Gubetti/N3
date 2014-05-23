@@ -51,7 +51,9 @@ public class ObjetoGrafico {
 		if(selecionado) {
 			bbox.desenhar(gl);
 			
-			gl.glPushMatrix();
+			// Desenha os pontos do polígono em destaque, significando que é possível editar os pontos
+			if(!transformado) {
+				gl.glPushMatrix();
 			 	gl.glMultMatrixd(transformacao.getMatriz(), 0);
 				gl.glPointSize(6.0f);
 				gl.glBegin(GL.GL_POINTS);
@@ -59,7 +61,8 @@ public class ObjetoGrafico {
 					gl.glVertex2d(ponto.GetX(), ponto.GetY() * -1);
 				}
 				gl.glEnd();
-			gl.glPopMatrix();
+			gl.glPopMatrix();			
+			}
 		}
 	}
 

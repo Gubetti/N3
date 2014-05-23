@@ -8,7 +8,7 @@ package model;
 
 public class Transformacao {
 	
-	static final double RAS_DEG_TO_RAD = 0.017453292519943295769236907684886;
+	public static final double RAS_DEG_TO_RAD = 0.017453292519943295769236907684886;
 	
 	private double[] matriz = {	1, 0, 0, 0,
 								0, 1, 0, 0,

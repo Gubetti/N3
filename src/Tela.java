@@ -113,6 +113,11 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 				objetoGraficoInserir = null;
 				estadoAtual = Estado.EDICAO_EXCLUSAO;
 			} else {
+				if(objetoGraficoEditar != null && objetoGraficoEditar.isTransformado()) {
+					objetoGraficoEditar.setSelecionado(false);
+					objetoGraficoEditar = null;
+					achouPonto = false;
+				}
 				estadoAtual = Estado.ADICAO;
 			}
 			break;
@@ -154,7 +159,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 				}
 			}
 			break;
-		case KeyEvent.VK_3:
+		case KeyEvent.VK_4:
 			//E aqui o objeto gráfico que estiver selecionado vai para o pai, se existir
 			if(objetoGraficoEditar != null && objetoGraficoEditar.getObjetoPai() != null) {
 				objetoGraficoEditar.setSelecionado(false);
@@ -172,43 +177,45 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			break;
 		case KeyEvent.VK_RIGHT:
 			// Translacao para direita
-			Transformacao matrixTranslate = new Transformacao();
-			Ponto point = new Ponto();
-			point.SetX(2);
-			matrixTranslate.FazerTranslacao(point);
-			objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrixTranslate));
-			objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrixTranslate));
-			objetoGraficoEditar.setTransformado(true);
+			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				translacao(new Ponto(2, 0, 0, 0));
+			}
 			break;
 		case KeyEvent.VK_LEFT:
 			// Translacao para esquerda
-			matrixTranslate = new Transformacao();
-			point = new Ponto();
-			point.SetX(-2);
-			matrixTranslate.FazerTranslacao(point);
-			objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrixTranslate));
-			objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrixTranslate));
-			objetoGraficoEditar.setTransformado(true);
+			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				translacao(new Ponto(-2, 0, 0, 0));
+			}
 			break;
 		case KeyEvent.VK_UP:
 			// Translacao para cima
-			matrixTranslate = new Transformacao();
-			point = new Ponto();
-			point.SetY(2);
-			matrixTranslate.FazerTranslacao(point);
-			objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrixTranslate));
-			objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrixTranslate));
-			objetoGraficoEditar.setTransformado(true);
+			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				translacao(new Ponto(0, 2, 0, 0));		
+			}
 			break;
 		case KeyEvent.VK_DOWN:
 			// Translacao para baixo
-			matrixTranslate = new Transformacao();
-			point = new Ponto();
-			point.SetY(-2);
-			matrixTranslate.FazerTranslacao(point);
-			objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrixTranslate));
-			objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrixTranslate));
-			objetoGraficoEditar.setTransformado(true);
+			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				translacao(new Ponto(0, -2, 0, 0));
+			}
+			break;
+		case KeyEvent.VK_1:
+			// Rotação
+			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				rotacao();
+			}
+			break;
+		case KeyEvent.VK_2:
+			// Reduzir escala
+			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				escala(new Ponto(0.5, 0.5, 1, 0));
+			}
+			break;
+		case KeyEvent.VK_3:
+			// Aumentar escala
+			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
+				escala(new Ponto(2, 2, 1, 0));
+			}
 			break;
 		}
 		glDrawable.display();
@@ -316,4 +323,57 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		}
 	}
 	
+	private void translacao(Ponto pontoTranslacao) {
+		Transformacao matrizTranslacao = new Transformacao();
+		Ponto pointo = new Ponto();
+		if(pontoTranslacao.GetX() != 0) {
+			pointo.SetX(pontoTranslacao.GetX());
+		} else {
+			pointo.SetY(pontoTranslacao.GetY());
+		}
+		matrizTranslacao.FazerTranslacao(pointo);
+		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrizTranslacao));
+		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrizTranslacao));
+		objetoGraficoEditar.setTransformado(true);	
+	}
+	
+	private void escala(Ponto pontoEscala) {
+		Transformacao matrizTranslacao = new Transformacao();
+		Transformacao matrizGlobal = new Transformacao();
+		Transformacao matrizEscala = new Transformacao();
+		Transformacao matrizInversa = new Transformacao();
+		
+		Ponto pontoCentro = objetoGraficoEditar.getBbox().retornaCentro();		
+		matrizTranslacao.FazerTranslacao(new Ponto(pontoCentro.GetX() * - 1, pontoCentro.GetY() * - 1, pontoCentro.GetZ(), pontoCentro.GetW()));
+		matrizEscala.FazerEscala(pontoEscala.GetX(), pontoEscala.GetY(), pontoEscala.GetZ());
+		matrizInversa.FazerTranslacao(pontoCentro);
+		
+		matrizGlobal = matrizGlobal.transformarMatrix(matrizInversa);
+		matrizGlobal = matrizGlobal.transformarMatrix(matrizEscala);
+		matrizGlobal = matrizGlobal.transformarMatrix(matrizTranslacao);
+		
+		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrizGlobal));
+		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrizGlobal));
+		objetoGraficoEditar.setTransformado(true);	
+	}
+	
+	private void rotacao() {
+		Transformacao matrizTranslacao = new Transformacao();
+		Transformacao matrizGlobal = new Transformacao();
+		Transformacao matrizRotacao = new Transformacao();
+		Transformacao matrizInversa = new Transformacao();
+		
+		Ponto pontoCentro = objetoGraficoEditar.getBbox().retornaCentro();		
+		matrizTranslacao.FazerTranslacao(new Ponto(pontoCentro.GetX() * - 1, pontoCentro.GetY() * - 1, pontoCentro.GetZ(), pontoCentro.GetW()));
+		matrizRotacao.FazerRotacaoZ(Transformacao.RAS_DEG_TO_RAD * 10);
+		matrizInversa.FazerTranslacao(pontoCentro);
+		
+		matrizGlobal = matrizGlobal.transformarMatrix(matrizInversa);
+		matrizGlobal = matrizGlobal.transformarMatrix(matrizRotacao);
+		matrizGlobal = matrizGlobal.transformarMatrix(matrizTranslacao);
+		
+		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrizGlobal));
+		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrizGlobal));
+		objetoGraficoEditar.setTransformado(true);	
+	}
 }

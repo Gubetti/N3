@@ -59,6 +59,10 @@ public class BBox {
 		 gl.glPopMatrix();
 	}
 	
+	public Ponto retornaCentro() {
+		return new Ponto((Xmax + Xmin) / 2, ((Ymax + Ymin) / 2) * -1, (Zmax + Zmin) / 2, 1);
+	}
+	
 	public double getXmin() {
 		return Xmin;
 	}
