@@ -105,9 +105,13 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		case KeyEvent.VK_SPACE:
 			// Muda o estado do programa
 			if(estadoAtual == Estado.ADICAO) {
-				estadoAtual = Estado.EDICAO_EXCLUSAO;
-				mundo.getObjetos().remove(objetoGraficoInserir);
+				if(objetoGraficoEditar == null) {
+					mundo.getObjetos().remove(objetoGraficoInserir);
+				} else {
+					objetoGraficoEditar.getFilhos().remove(objetoGraficoInserir);
+				}
 				objetoGraficoInserir = null;
+				estadoAtual = Estado.EDICAO_EXCLUSAO;
 			} else {
 				estadoAtual = Estado.ADICAO;
 			}
@@ -143,13 +147,10 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		case KeyEvent.VK_P:
 			// Deixa aberto ou fechado um objeto gráfico
 			if(estadoAtual == Estado.EDICAO_EXCLUSAO && objetoGraficoEditar != null) {
-				if(objetoGraficoEditar.isFechado()) {
-					objetoGraficoEditar.getPontos().remove(objetoGraficoEditar.getPontos().size() - 1);
-					objetoGraficoEditar.setFechado(false);
+				if(objetoGraficoEditar.getPrimitiva() == GL.GL_LINE_STRIP) {
+					objetoGraficoEditar.setPrimitiva(GL.GL_LINE_LOOP);
 				} else {
-					Ponto ponto = objetoGraficoEditar.getPontos().get(0);
-					objetoGraficoEditar.getPontos().add(new Ponto(ponto.GetX(), ponto.GetY(), ponto.GetZ(), ponto.GetW()));
-					objetoGraficoEditar.setFechado(true);
+					objetoGraficoEditar.setPrimitiva(GL.GL_LINE_STRIP);
 				}
 			}
 			break;
@@ -170,13 +171,44 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			}
 			break;
 		case KeyEvent.VK_RIGHT:
-			double x = 2;
-			Ponto point = new Ponto();
+			// Translacao para direita
 			Transformacao matrixTranslate = new Transformacao();
-			point.SetX(x);
+			Ponto point = new Ponto();
+			point.SetX(2);
 			matrixTranslate.FazerTranslacao(point);
 			objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrixTranslate));
 			objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrixTranslate));
+			objetoGraficoEditar.setTransformado(true);
+			break;
+		case KeyEvent.VK_LEFT:
+			// Translacao para esquerda
+			matrixTranslate = new Transformacao();
+			point = new Ponto();
+			point.SetX(-2);
+			matrixTranslate.FazerTranslacao(point);
+			objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrixTranslate));
+			objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrixTranslate));
+			objetoGraficoEditar.setTransformado(true);
+			break;
+		case KeyEvent.VK_UP:
+			// Translacao para cima
+			matrixTranslate = new Transformacao();
+			point = new Ponto();
+			point.SetY(2);
+			matrixTranslate.FazerTranslacao(point);
+			objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrixTranslate));
+			objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrixTranslate));
+			objetoGraficoEditar.setTransformado(true);
+			break;
+		case KeyEvent.VK_DOWN:
+			// Translacao para baixo
+			matrixTranslate = new Transformacao();
+			point = new Ponto();
+			point.SetY(-2);
+			matrixTranslate.FazerTranslacao(point);
+			objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrixTranslate));
+			objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrixTranslate));
+			objetoGraficoEditar.setTransformado(true);
 			break;
 		}
 		glDrawable.display();
@@ -251,7 +283,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			if(objetoGraficoEditar == null) {
 				Ponto ponto = new Ponto(e.getX() - dif, e.getY() - dif, 0, 1);
 				for (ObjetoGrafico objetoGrafico : mundo.getObjetos()) {
-					if (!achouPonto) {
+					if (!achouPonto && !objetoGrafico.isTransformado()) {
 						verificarPonto(objetoGrafico, ponto);
 					}
 				}
@@ -270,18 +302,14 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 	
 	private void verificarPonto(ObjetoGrafico objetoGrafico, Ponto ponto) {
 		//Verifica se o ponto está dentro da BBox e se pertence ao objeto com scanLine
-		Transformacao transformacao = new Transformacao();
-		transformacao.setMatriz(objetoGrafico.getTransformacao().getMatriz());
-		Ponto pontoTransformado = transformacao.transformarPonto(ponto);
-		if(objetoGrafico.getBbox().ptoDentroBBox(pontoTransformado)) {
-			System.out.println("DENTRO");
-			if(objetoGrafico.scanLine(pontoTransformado)) {
+		if(objetoGrafico.getBbox().ptoDentroBBox(ponto)) {
+			if(objetoGrafico.scanLine(ponto)) {
 				objetoGraficoEditar = objetoGrafico;
 				objetoGraficoEditar.setSelecionado(true);
 				achouPonto = true;
 			}
 		}
-		if (!achouPonto) {
+		if (!achouPonto && !objetoGrafico.isTransformado()) {
 			for (ObjetoGrafico filho : objetoGrafico.getFilhos()) {
 				verificarPonto(filho, ponto);
 			}

@@ -14,7 +14,7 @@ public class ObjetoGrafico {
 	private List<ObjetoGrafico> filhos;
 	private Transformacao transformacao;
 	private boolean selecionado;
-	private boolean fechado;
+	private boolean transformado;
 	private ObjetoGrafico objetoPai;
 	
 	public ObjetoGrafico(Cor cor) {
@@ -30,7 +30,7 @@ public class ObjetoGrafico {
 		filhos = new ArrayList<ObjetoGrafico>();
 		transformacao = new Transformacao();
 		selecionado = false;
-		fechado = false;
+		transformado = false;
 	}
 	
 	public void desenhar(GL gl) {
@@ -50,6 +50,16 @@ public class ObjetoGrafico {
 		
 		if(selecionado) {
 			bbox.desenhar(gl);
+			
+			gl.glPushMatrix();
+			 	gl.glMultMatrixd(transformacao.getMatriz(), 0);
+				gl.glPointSize(6.0f);
+				gl.glBegin(GL.GL_POINTS);
+				for (Ponto ponto : pontos) {
+					gl.glVertex2d(ponto.GetX(), ponto.GetY() * -1);
+				}
+				gl.glEnd();
+			gl.glPopMatrix();
 		}
 	}
 
@@ -145,12 +155,13 @@ public class ObjetoGrafico {
 		this.selecionado = selecionado;
 	}
 
-	public boolean isFechado() {
-		return fechado;
+
+	public boolean isTransformado() {
+		return transformado;
 	}
 
-	public void setFechado(boolean fechado) {
-		this.fechado = fechado;
+	public void setTransformado(boolean transformado) {
+		this.transformado = transformado;
 	}
 
 	public ObjetoGrafico getObjetoPai() {
