@@ -177,6 +177,10 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		case KeyEvent.VK_ESCAPE:
 			// Aqui "deselecionaremos" um objeto se estiver selecionado
 			if(objetoGraficoEditar != null) {
+				if(objetoGraficoEditar.getPontoSelecionado() != null) {
+					objetoGraficoEditar.getPontoSelecionado().setCor(new Cor(0, 0, 1));
+					objetoGraficoEditar.setPontoSelecionado(null);
+				}
 				objetoGraficoEditar.setSelecionado(false);
 				objetoGraficoEditar = null;
 				achouPonto = false;
@@ -357,6 +361,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrizTranslacao));
 		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrizTranslacao));
 		objetoGraficoEditar.setTransformado(true);	
+		objetoGraficoEditar.setPontoSelecionado(null);
 	}
 	
 	private void escala(Ponto pontoEscala) {
@@ -377,6 +382,7 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrizGlobal));
 		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrizGlobal));
 		objetoGraficoEditar.setTransformado(true);	
+		objetoGraficoEditar.setPontoSelecionado(null);
 	}
 	
 	private void rotacao() {
@@ -397,5 +403,6 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrizGlobal));
 		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrizGlobal));
 		objetoGraficoEditar.setTransformado(true);	
+		objetoGraficoEditar.setPontoSelecionado(null);
 	}
 }
