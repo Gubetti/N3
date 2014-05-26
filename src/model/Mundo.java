@@ -5,26 +5,32 @@ import java.util.List;
 
 import javax.media.opengl.GL;
 
+/**
+ * Classe que representa o mundo.
+ */
 public class Mundo {
 	
 	private List<ObjetoGrafico> objetos;
 	private Camera camera;
 	private Cor corDeFundo;
 	
+	/**
+	 * Inicializa com uma câmera padrão e cor de fundo branca.
+	 */
 	public Mundo() {
 		camera = new Camera(-200.0f, 200.0f, -200.0f, 200.0f);
 		corDeFundo = new Cor(1f, 1f, 1f);
 		objetos = new ArrayList<ObjetoGrafico>();
 	}
 
+	/**
+	 * Método que desenha todos os objetos gráficos que pertencem ao mundo.
+	 * @param gl GL global
+	 */
 	public void desenhar(GL gl) {
 		 for(ObjetoGrafico objetoGrafico : objetos) {
 			 objetoGrafico.desenhar(gl);
 		 }
-	}
-	
-	public void adicionarObjetoGrafico() {
-		
 	}
 
 	public List<ObjetoGrafico> getObjetos() {
@@ -59,6 +65,5 @@ public class Mundo {
 		}
 		return s;
 	}
-	
 	
 }

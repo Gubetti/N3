@@ -1,3 +1,4 @@
+package view;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -19,8 +20,11 @@ import model.ObjetoGrafico;
 import model.Ponto;
 import model.Transformacao;
 
+/**
+ * Classe que renderiza a tela para o usuário.
+ */
+public class Tela implements GLEventListener, KeyListener, MouseListener, MouseMotionListener {
 
-public class Tela implements GLEventListener, KeyListener, MouseListener, MouseMotionListener{
 	private GL gl;
 	private GLU glu;
 	private GLAutoDrawable glDrawable;
@@ -32,6 +36,10 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 	private boolean achouPonto;
 	private List<Cor> cores;
 	
+	/**
+	 * Método que é chamado quando a tela é iniciada.
+	 * Configura as váriaveis de ambiente para valores padrões.
+	 */
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		mundo = new Mundo();
@@ -50,7 +58,12 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		cores.add(new Cor(0, 1, 0));
 		cores.add(new Cor(0, 0, 1));
 	}
-	
+
+	/**
+	 * Método que é chamado quando a tela é atualizada.
+	 * Desenha um sistema de referência universal e então 
+	 * chama o método que desenha os objetos da Classe Mundo.
+	 */	
 	@Override
 	public void display(GLAutoDrawable arg0) {
 		 gl.glClear(GL.GL_COLOR_BUFFER_BIT);
@@ -63,7 +76,10 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		 mundo.desenhar(gl);
 		 gl.glFlush();
 	}
-	
+
+	/**
+	 * Método que desenha o sistema de referência universal na tela.
+	 */	
 	private void displaySRU() {
 		gl.glColor3f(1.0f, 0.0f, 0.0f);
 		gl.glBegin(GL.GL_LINES);
@@ -76,8 +92,11 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			gl.glVertex2f(0.0f, 200.0f);
 		gl.glEnd();
 	}
-	
 
+	/**
+	 * Método que é chamado quando uma tecla é pressionada.
+	 * É utilizado para controlar as interações do teclado com a tela.
+	 */	
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
@@ -232,28 +251,56 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		glDrawable.display();
 	}
 
+	/**
+	 * Método que é chamado quando uma tecla é "solta".
+	 * Não é utilizado nesse projeto.
+	 * É declarado automaticamente junto com o listner do teclado.
+	 */	
 	@Override
 	public void keyReleased(KeyEvent arg0) {
 	}
 
+	/**
+	 * Método que é chamado quando uma tecla é "digitada".
+	 * Não é utilizado nesse projeto.
+	 * É declarado automaticamente junto com o listner do teclado.
+	 */	
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 	}
 
+	/**
+	 * Método que é chamado quando a tela é redesenhada.
+	 * Não é utilizado nesse projeto.
+	 * É declarado automaticamente junto com o listner da tela.
+	 */	
 	@Override
 	public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2) {
 	}
 
+	/**
+	 * Método que é chamado quando a tela é redimensionada.
+	 * Não é utilizado nesse projeto.
+	 * É declarado automaticamente junto com o listner da tela.
+	 */	
 	@Override
 	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int arg3,
 			int arg4) {
 	}
 
+	/**
+	 * Método que é chamado quando o mouse é arrastado depois de clicar.
+	 * Não é utilizado nesse projeto.
+	 * É declarado automaticamente junto com o listner do mouse.
+	 */	
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
-		
 	}
 
+	/**
+	 * Método que é chamado quando o mouse é movimentado.
+	 * É utilizado para controlar as interações do mouse com a tela.
+	 */	
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		Ponto pontoClique = new Ponto(e.getX() - dif, e.getY() - dif, 0, 1);
@@ -274,21 +321,37 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		}
 	}
 
+	/**
+	 * Método que é chamado quando o mouse é clicado.
+	 * Não é utilizado nesse projeto.
+	 * É declarado automaticamente junto com o listner do mouse.
+	 */	
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		
 	}
 
+	/**
+	 * Método que é chamado quando o mouse entra na tela.
+	 * Não é utilizado nesse projeto.
+	 * É declarado automaticamente junto com o listner do mouse.
+	 */	
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
-		
 	}
 
+	/**
+	 * Método que é chamado quando o mouse sai na tela.
+	 * Não é utilizado nesse projeto.
+	 * É declarado automaticamente junto com o listner do mouse.
+	 */	
 	@Override
 	public void mouseExited(MouseEvent arg0) {
-		
 	}
 
+	/**
+	 * Método que é chamado quando o mouse é pressionado.
+	 * É utilizado para controlar as interações do mouse com a tela.
+	 */	
 	@Override
 	public void mousePressed(MouseEvent e) {
 		//System.out.println((e.getX() - glDrawable.getWidth() / 2)+ "  " + (e.getY() - glDrawable.getWidth() / 2));
@@ -328,11 +391,21 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		glDrawable.display();
 	}
 
+	/**
+	 * Método que é chamado quando o mouse é "solto".
+	 * Não é utilizado nesse projeto.
+	 * É declarado automaticamente junto com o listner do mouse.
+	 */	
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		
 	}
 	
+	/**
+	 * Método que verifica se o click do usuário está dentro objeto.
+	 * Primeiro verifica com a BBox, depois a verificação é feita com a ScanLine.
+	 * @param objetoGrafico Objeto a ser verificado.
+	 * @param ponto Objeto Ponto que simboliza onde o click do usuário ocorreu.
+	 */
 	private void verificarPonto(ObjetoGrafico objetoGrafico, Ponto ponto) {
 		//Verifica se o ponto está dentro da BBox e se pertence ao objeto com scanLine
 		if(objetoGrafico.getBbox().ptoDentroBBox(ponto)) {
@@ -349,6 +422,10 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		}
 	}
 	
+	/**
+	 * Método que translada o objeto selecionado conforme a tecla pressionada.
+	 * @param pontoTranslacao Objeto Ponto que representa a direção da translação.
+	 */
 	private void translacao(Ponto pontoTranslacao) {
 		Transformacao matrizTranslacao = new Transformacao();
 		Ponto pointo = new Ponto();
@@ -358,12 +435,16 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 			pointo.SetY(pontoTranslacao.GetY());
 		}
 		matrizTranslacao.FazerTranslacao(pointo);
-		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrizTranslacao));
-		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrizTranslacao));
+		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatriz(matrizTranslacao));
+		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatriz(matrizTranslacao));
 		objetoGraficoEditar.setTransformado(true);	
 		objetoGraficoEditar.setPontoSelecionado(null);
 	}
 	
+	/**
+	 * Método que aumenta ou diminui a escala do objeto selecionado conforme a tecla pressionada.
+	 * @param pontoEscala Objeto Ponto que representa a ação da escala (Aumentar ou Diminuir).
+	 */
 	private void escala(Ponto pontoEscala) {
 		Transformacao matrizTranslacao = new Transformacao();
 		Transformacao matrizGlobal = new Transformacao();
@@ -375,16 +456,19 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		matrizEscala.FazerEscala(pontoEscala.GetX(), pontoEscala.GetY(), pontoEscala.GetZ());
 		matrizInversa.FazerTranslacao(pontoCentro);
 		
-		matrizGlobal = matrizGlobal.transformarMatrix(matrizInversa);
-		matrizGlobal = matrizGlobal.transformarMatrix(matrizEscala);
-		matrizGlobal = matrizGlobal.transformarMatrix(matrizTranslacao);
+		matrizGlobal = matrizGlobal.transformarMatriz(matrizInversa);
+		matrizGlobal = matrizGlobal.transformarMatriz(matrizEscala);
+		matrizGlobal = matrizGlobal.transformarMatriz(matrizTranslacao);
 		
-		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrizGlobal));
-		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrizGlobal));
+		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatriz(matrizGlobal));
+		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatriz(matrizGlobal));
 		objetoGraficoEditar.setTransformado(true);	
 		objetoGraficoEditar.setPontoSelecionado(null);
 	}
 	
+	/**
+	 * Método que rotaciona o objeto selecionado em um angulo predeterminado
+	 */
 	private void rotacao() {
 		Transformacao matrizTranslacao = new Transformacao();
 		Transformacao matrizGlobal = new Transformacao();
@@ -396,13 +480,14 @@ public class Tela implements GLEventListener, KeyListener, MouseListener, MouseM
 		matrizRotacao.FazerRotacaoZ(Transformacao.RAS_DEG_TO_RAD * 10);
 		matrizInversa.FazerTranslacao(pontoCentro);
 		
-		matrizGlobal = matrizGlobal.transformarMatrix(matrizInversa);
-		matrizGlobal = matrizGlobal.transformarMatrix(matrizRotacao);
-		matrizGlobal = matrizGlobal.transformarMatrix(matrizTranslacao);
+		matrizGlobal = matrizGlobal.transformarMatriz(matrizInversa);
+		matrizGlobal = matrizGlobal.transformarMatriz(matrizRotacao);
+		matrizGlobal = matrizGlobal.transformarMatriz(matrizTranslacao);
 		
-		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatrix(matrizGlobal));
-		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatrix(matrizGlobal));
+		objetoGraficoEditar.setTransformacao(objetoGraficoEditar.getTransformacao().transformarMatriz(matrizGlobal));
+		objetoGraficoEditar.getBbox().setTransformacao(objetoGraficoEditar.getBbox().getTransformacao().transformarMatriz(matrizGlobal));
 		objetoGraficoEditar.setTransformado(true);	
 		objetoGraficoEditar.setPontoSelecionado(null);
 	}
+	
 }

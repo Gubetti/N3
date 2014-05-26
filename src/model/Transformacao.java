@@ -6,6 +6,9 @@ package model;
 //					[ matrix[2] matrix[6] matrix[10] matrix[14] ]
 //					[ matrix[3] matrix[7] matrix[11] matrix[15] ]
 
+/**
+ * Classe que realiza as transformações na matriz. CUIDADO AO MUDAR ALGUM MÉTODO EXISTENTE AQUI.
+ */
 public class Transformacao {
 	
 	public static final double RAS_DEG_TO_RAD = 0.017453292519943295769236907684886;
@@ -72,7 +75,7 @@ public class Transformacao {
 		return pontoResult;
 	}
 	
-	public Transformacao transformarMatrix(Transformacao t) {
+	public Transformacao transformarMatriz(Transformacao t) {
 		Transformacao result = new Transformacao();
 	    for (int i=0; i < 16; ++i) {
 	        result.matriz[i] =

@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.media.opengl.GL;
 
+/**
+ * Classe que representa cada objeto gráfico no mundo.
+ */
 public class ObjetoGrafico {
 
 	private List<Ponto> pontos;
@@ -35,6 +38,10 @@ public class ObjetoGrafico {
 		pontoSelecionado = null;
 	}
 	
+	/**
+	 * Método que desenha o objeto gráfico e todos os seus filhos.
+	 * @param gl GL global
+	 */
 	public void desenhar(GL gl) {
 		gl.glColor3f(cor.getR(), cor.getG(), cor.getB());
 
@@ -68,7 +75,14 @@ public class ObjetoGrafico {
 			}
 		}
 	}
-
+	
+	/**
+	 * Método que utiliza a técnica da scanline como segunda etapa para verificar
+	 * se o click do usuário realmente está dentro do objeto gráfico ou se está somente
+	 * dentro da BBox do objeto gráfico.
+	 * @param ponto Objeto Ponto que representa o click do usuário.
+	 * @return Verdadeiro se o parâmetro ponto está dentro do objeto gráfico, falso se o contrário ocorrer.
+	 */
 	public boolean scanLine(Ponto ponto) {
 		int intersecoes = 0;
 		for(int i = 0; i < pontos.size(); i ++) {
@@ -96,16 +110,30 @@ public class ObjetoGrafico {
 		return false;
 	}
 	
+	/**
+	 * Método para calcular a interseccao de dois pontos do objeto gráfico.
+	 * @param p1 Objeto Ponto que representa um dos pontos do objeto gráfico.
+	 * @param p2 Objeto Ponto que representa o objeto adjacente ao ponto do parâmentro p1.
+	 * @param ponto Objeto Ponto que representa o click do usuário.
+	 * @return Valor da interseccao, se for maior que 0 e menor que 1 está na mesma linha do click do usuário.
+	 */
 	private double xInterseccao(Ponto p1, Ponto p2, Ponto ponto) {
 		return (ponto.GetY() - p1.GetY()) / (p2.GetY() - p1.GetY());
 		//return (p1.GetX() + (p2.GetX() - p1.GetX())) * ((ponto.GetY() - p1.GetY())/(p2.GetY() - p1.GetY()));
 	}
 	
+	/**
+	 * Método que atualiza a BBox do objeto gráfico.
+	 */
 	public void atualizarBBox() {
 		bbox.atualiza(pontos);
 	}
 	
-
+	/**
+	 * Método que verifica se um click do usuário está perto o bastante de um ponto
+	 * para selecioná-lo.
+	 * @param pontoClique Objeto Ponto que representa o click do usuário.
+	 */
 	public void verificarPontoEditar(Ponto pontoClique) {
 		for(Ponto ponto : pontos) {
 			boolean achou = false;
@@ -162,6 +190,10 @@ public class ObjetoGrafico {
 		//System.out.println(pontoClique.GetX() + " | " + pontoClique.GetY());
 	}
 	
+	/**
+	 * Método que atualiza o ponto que está selecionado atualmente no objeto.
+	 * @param pontoClique Objeto Ponto que representa o click do usuário.
+	 */
 	public void mudarPontoSelecionado(Ponto pontoClique) {
 		pontoSelecionado.SetX(pontoClique.GetX());
 		pontoSelecionado.SetY(pontoClique.GetY());

@@ -1,5 +1,8 @@
 package model;
 
+/**
+ * Classe que representa as coordenadas de um ponto na tela.
+ */
 public class Ponto {
 
 	private double x;

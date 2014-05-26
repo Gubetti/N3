@@ -18,6 +18,10 @@ public class BBox {
 		transformacao = new Transformacao();
 	}
 
+	/**
+	 * Método que atuliza a BBox do objeto gráfico.
+	 * @param pontos Lista de pontos que o método deve lever em consideração.
+	 */
 	public void atualiza(List<Ponto> pontos) {
 		Xmin = 1000;
 		Xmax = -1000;
@@ -40,13 +44,22 @@ public class BBox {
 		}
 	}
 	
+	/**
+	 * Método que verifica se um ponto está dentro da BBox.
+	 * @param ponto Objeto Ponto que representa o click do usuário.
+	 * @return Verdadeiro se o parâmetro ponto está dentro da BBox, falso se o contrário ocorre.
+	 */
 	public boolean ptoDentroBBox(Ponto ponto) {
 		if(ponto.GetX() >= Xmin && ponto.GetX() <= Xmax && ponto.GetY() >= Ymin && ponto.GetY() <= Ymax) {
 			return true;
 		}
 		return false;
 	}
-
+	
+	/**
+	 * Método que desenha a BBox na tela.
+	 * @param gl GL global.
+	 */
 	public void desenhar(GL gl) {
 		 gl.glColor3f(0, 0, 1);
 		 gl.glPushMatrix();
@@ -60,6 +73,10 @@ public class BBox {
 		 gl.glPopMatrix();
 	}
 	
+	/**
+	 * Método que calcula o centro da BBox.
+	 * @return Objeto Ponto que se refere ao centro da BBox.
+	 */
 	public Ponto retornaCentro() {
 		return new Ponto((Xmax + Xmin) / 2, ((Ymax + Ymin) / 2) * -1, (Zmax + Zmin) / 2, 1);
 	}
